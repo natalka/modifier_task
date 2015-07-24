@@ -132,8 +132,6 @@ class Modifier
     result
   end
 
-
-
   def lazy_read(file)
     Enumerator.new do |yielder|
       CSV.foreach(file, DEFAULT_CSV_OPTIONS) do |row|
