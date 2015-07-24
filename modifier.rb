@@ -9,10 +9,19 @@ require 'byebug'
 class Modifier
 
   KEYWORD_UNIQUE_ID = 'Keyword Unique ID'
-  LAST_VALUE_WINS = ['Account ID', 'Account Name', 'Campaign', 'Ad Group', 'Keyword', 'Keyword Type', 'Subid', 'Paused', 'Max CPC', 'Keyword Unique ID', 'ACCOUNT', 'CAMPAIGN', 'BRAND', 'BRAND+CATEGORY', 'ADGROUP', 'KEYWORD']
+  LAST_VALUE_WINS = ['Account ID', 'Account Name', 'Campaign', 'Ad Group', 'Keyword',
+    'Keyword Type', 'Subid', 'Paused', 'Max CPC', 'Keyword Unique ID', 'ACCOUNT', 'CAMPAIGN',
+    'BRAND', 'BRAND+CATEGORY', 'ADGROUP', 'KEYWORD']
   LAST_REAL_VALUE_WINS = ['Last Avg CPC', 'Last Avg Pos']
-  INT_VALUES = ['Clicks', 'Impressions', 'ACCOUNT - Clicks', 'CAMPAIGN - Clicks', 'BRAND - Clicks', 'BRAND+CATEGORY - Clicks', 'ADGROUP - Clicks', 'KEYWORD - Clicks']
+  INT_VALUES = ['Clicks', 'Impressions', 'ACCOUNT - Clicks', 'CAMPAIGN - Clicks', 'BRAND - Clicks',
+    'BRAND+CATEGORY - Clicks', 'ADGROUP - Clicks', 'KEYWORD - Clicks']
   FLOAT_VALUES = ['Avg CPC', 'CTR', 'Est EPC', 'newBid', 'Costs', 'Avg Pos']
+  NO_OF_COMMISSIONS = 'number of commissions'
+  COMMISSIONS_VALS = ['Commission Value', 'ACCOUNT - Commission Value',
+    'CAMPAIGN - Commission Value', 'BRAND - Commission Value', 'BRAND+CATEGORY - Commission Value',
+    'ADGROUP - Commission Value', 'KEYWORD - Commission Value']
+
+  DEFAULT_CSV_OPTIONS = { :col_sep => "\t", :headers => :first_row }
 
   LINES_PER_FILE = 120000
 
@@ -92,11 +101,11 @@ class Modifier
     FLOAT_VALUES.each do |key|
       hash[key] = hash[key][0].from_german_to_f.to_german_s
     end
-    ['number of commissions'].each do |key|
-      hash[key] = (@cancellation_factor * hash[key][0].from_german_to_f).to_german_s
-    end
-    ['Commission Value', 'ACCOUNT - Commission Value', 'CAMPAIGN - Commission Value', 'BRAND - Commission Value', 'BRAND+CATEGORY - Commission Value', 'ADGROUP - Commission Value', 'KEYWORD - Commission Value'].each do |key|
-      hash[key] = (@cancellation_factor * @saleamount_factor * hash[key][0].from_german_to_f).to_german_s
+    hash[NO_OF_COMMISSIONS] =
+      (@cancellation_factor * hash[NO_OF_COMMISSIONS][0].from_german_to_f).to_german_s
+    COMMISSIONS_VALS.each do |key|
+      hash[key] =
+        (@cancellation_factor * @saleamount_factor * hash[key][0].from_german_to_f).to_german_s
     end
     hash
   end
@@ -118,8 +127,6 @@ class Modifier
     end
     result
   end
-
-  DEFAULT_CSV_OPTIONS = { :col_sep => "\t", :headers => :first_row }
 
   def parse(file)
     CSV.read(file, DEFAULT_CSV_OPTIONS)
