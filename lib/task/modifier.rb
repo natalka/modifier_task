@@ -25,7 +25,6 @@ module Task
       input = Sorter.sort(input, SORT_BY_CLICKS)
 
       input_enumerator = lazy_read(input)
-
       combiner = Combiner.new do |value|
         value[KEYWORD_UNIQUE_ID]
       end.combine(input_enumerator)
@@ -41,35 +40,36 @@ module Task
           end
         end
       end
+      write_to_csvs(merger, output)
+    end
 
+    private
+
+    def write_to_csvs(merger, output)
       done = false
       file_index = 0
       file_name = output.gsub('.txt', '')
-      while not done do
+      while is_finished?(merger) do
         CSV.open(file_name + "_#{file_index}.txt", "wb", WRITE_CSV_OPTIONS) do |csv|
-          headers_written = false
-          line_count = 0
-          while line_count < LINES_PER_FILE
-            begin
-              merged = merger.next
-              if not headers_written
-                csv << merged.keys
-                headers_written = true
-                line_count +=1
-              end
-              csv << merged
-              line_count +=1
-            rescue StopIteration
-              done = true
-              break
-            end
+          csv << merger.peek.keys if is_finished?(merger)
+          line_count = 1
+          while line_count < LINES_PER_FILE && is_finished?(merger)
+            merged = merger.next
+            csv << merged
+            line_count +=1
           end
           file_index += 1
         end
       end
     end
 
-    private
+    def is_finished?(enum)
+      begin
+        enum.peek
+      rescue StopIteration
+        nil
+      end
+    end
 
     def combine(merged)
       result = []
