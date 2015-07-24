@@ -1,19 +1,10 @@
-require File.expand_path('lib/combiner',File.dirname(__FILE__))
+require_relative './lib/combiner'
+require_relative './lib/core_ext/string'
+require_relative './lib/core_ext/float'
+
 require 'csv'
 require 'date'
 require 'byebug'
-
-class String
-  def from_german_to_f
-    self.gsub(',', '.').to_f
-  end
-end
-
-class Float
-  def to_german_s
-    self.to_s.gsub('.', ',')
-  end
-end
 
 class Modifier
 
