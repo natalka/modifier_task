@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Modifier do
+describe Task::Modifier do
   let!(:fixture_path) { File.dirname(__FILE__) + "/fixtures/" }
   let(:input_path)  { fixture_path + "myproject_2012-07-27_2012-10-10_performancedata.txt" }
   let(:output_path) { fixture_path + "myproject_2012-07-27_2012-10-10_performancedata_0.txt" }
@@ -14,7 +14,7 @@ describe Modifier do
   end
 
   it 'should return correct output file' do
-    modifier = Modifier.new(modification_factor, cancellaction_factor)
+    modifier = Task::Modifier.new(modification_factor, cancellaction_factor)
     modifier.modify(test_output_path, input_path)
     expect(FileUtils.compare_file(test_output_path_write, output_path)).to be_truthy
   end

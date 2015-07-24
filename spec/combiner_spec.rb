@@ -29,10 +29,10 @@ RSpec::Matchers.define :return_elements do |*expected|
   end
 end
 
-describe Combiner do
+describe Task::Combiner do
   let(:key_extractor) { Proc.new {|arg| arg} }
   let(:input_enumerators) { [] }
-  let(:combiner) { Combiner.new(&key_extractor) }
+  let(:combiner) { Task::Combiner.new(&key_extractor) }
 
   def enumerator_for(*array)
     array.to_enum :each
