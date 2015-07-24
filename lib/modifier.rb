@@ -1,6 +1,6 @@
-require_relative './lib/combiner'
-require_relative './lib/core_ext/string'
-require_relative './lib/core_ext/float'
+require 'combiner'
+require 'core_ext/string'
+require 'core_ext/float'
 
 require 'csv'
 require 'date'
