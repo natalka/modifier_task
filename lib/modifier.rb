@@ -1,12 +1,16 @@
 require 'combiner'
+require 'sorter'
 require 'core_ext/string'
 require 'core_ext/float'
+
 
 require 'csv'
 require 'date'
 require 'byebug'
 
 class Modifier
+  DEFAULT_CSV_OPTIONS = { :col_sep => "\t", :headers => :first_row }
+  WRITE_CSV_OPTIONS = DEFAULT_CSV_OPTIONS.merge({ :row_sep => "\r\n" })
 
   KEYWORD_UNIQUE_ID = 'Keyword Unique ID'
   LAST_VALUE_WINS = ['Account ID', 'Account Name', 'Campaign', 'Ad Group', 'Keyword',
@@ -20,8 +24,8 @@ class Modifier
   COMMISSIONS_VALS = ['Commission Value', 'ACCOUNT - Commission Value',
     'CAMPAIGN - Commission Value', 'BRAND - Commission Value', 'BRAND+CATEGORY - Commission Value',
     'ADGROUP - Commission Value', 'KEYWORD - Commission Value']
+  SORT_BY_CLICKS = 'Clicks'
 
-  DEFAULT_CSV_OPTIONS = { :col_sep => "\t", :headers => :first_row }
 
   LINES_PER_FILE = 120000
 
@@ -31,7 +35,7 @@ class Modifier
   end
 
   def modify(output, input)
-    input = sort(input)
+    input = Sorter.sort(input, SORT_BY_CLICKS)
 
     input_enumerator = lazy_read(input)
 
@@ -55,7 +59,7 @@ class Modifier
     file_index = 0
     file_name = output.gsub('.txt', '')
     while not done do
-      CSV.open(file_name + "_#{file_index}.txt", "wb", { :col_sep => "\t", :headers => :first_row, :row_sep => "\r\n" }) do |csv|
+      CSV.open(file_name + "_#{file_index}.txt", "wb", WRITE_CSV_OPTIONS) do |csv|
         headers_written = false
         line_count = 0
         while line_count < LINES_PER_FILE
@@ -128,9 +132,7 @@ class Modifier
     result
   end
 
-  def parse(file)
-    CSV.read(file, DEFAULT_CSV_OPTIONS)
-  end
+
 
   def lazy_read(file)
     Enumerator.new do |yielder|
@@ -140,23 +142,4 @@ class Modifier
     end
   end
 
-  def write(content, headers, output)
-    CSV.open(output, "wb", { :col_sep => "\t", :headers => :first_row, :row_sep => "\r\n" }) do |csv|
-      csv << headers
-      content.each do |row|
-        csv << row
-      end
-    end
-  end
-
-  public
-  def sort(file)
-    output = "#{file}.sorted"
-    content_as_table = parse(file)
-    headers = content_as_table.headers
-    index_of_key = headers.index('Clicks')
-    content = content_as_table.sort_by { |a| -a[index_of_key].to_i }
-    write(content, headers, output)
-    return output
-  end
 end
