@@ -23,7 +23,6 @@ module Task
 
     def modify(output, input)
       input = Sorter.sort(input, SORT_BY_CLICKS)
-
       input_enumerator = lazy_read(input)
       combiner = Combiner.new do |value|
         value[KEYWORD_UNIQUE_ID]
@@ -69,14 +68,6 @@ module Task
       rescue StopIteration
         nil
       end
-    end
-
-    def combine(merged)
-      result = []
-      merged.each do |_, hash|
-        result << combine_values(hash)
-      end
-      result
     end
 
     def combine_values(hash)
