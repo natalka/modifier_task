@@ -13,7 +13,7 @@ describe Task::Sorter do
 
   it 'should return sorted data' do
     output = Task::Sorter.sort(input_path, sorting_column)
-    expect(output).not_to be_empty
+    expect(output).to eq test_sorted_path
     expect(FileUtils.compare_file(test_sorted_path, sorted_path)).to be_truthy
   end
 end

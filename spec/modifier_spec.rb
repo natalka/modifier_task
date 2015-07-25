@@ -6,11 +6,14 @@ describe Task::Modifier do
   let(:output_path) { fixture_path + "myproject_2012-07-27_2012-10-10_performancedata_0.txt" }
   let(:test_output_path) { fixture_path + "test_result.txt" }
   let(:test_output_path_write) { fixture_path + "test_result_0.txt" }
+  let(:test_sorted_path) { fixture_path + "myproject_2012-07-27_2012-10-10_performancedata.txt.sorted" }
   let(:modification_factor) { 1 }
   let(:cancellaction_factor) { 0.4 }
 
   before :each do
-    FileUtils.rm_rf test_output_path_write
+    [test_output_path_write, test_sorted_path, test_output_path_write].each do |file|
+      FileUtils.rm_rf file
+    end
   end
 
   it 'should return correct output file' do
